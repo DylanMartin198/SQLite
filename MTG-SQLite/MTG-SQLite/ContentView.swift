@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  SQLite
+//  MTG-SQLite
 //
 //  Created by Dylan Martin on 6/12/23.
 //
@@ -13,7 +13,7 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
-            Text("SQLite!")
+            Text("Hello, world!")
         }
         .padding()
     }
