@@ -11,6 +11,7 @@
 		4A49BA262A3775B3001BD6C3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A49BA252A3775B3001BD6C3 /* ContentView.swift */; };
 		4A49BA282A3775B4001BD6C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A49BA272A3775B4001BD6C3 /* Assets.xcassets */; };
 		4A49BA2B2A3775B4001BD6C3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A49BA2A2A3775B4001BD6C3 /* Preview Assets.xcassets */; };
+		4A49BA332A3775FC001BD6C3 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 4A49BA322A3775FC001BD6C3 /* SQLite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A49BA332A3775FC001BD6C3 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +85,9 @@
 			dependencies = (
 			);
 			name = "MTG-SQLite";
+			packageProductDependencies = (
+				4A49BA322A3775FC001BD6C3 /* SQLite */,
+			);
 			productName = "MTG-SQLite";
 			productReference = 4A49BA202A3775B3001BD6C3 /* MTG-SQLite.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +116,9 @@
 				Base,
 			);
 			mainGroup = 4A49BA172A3775B3001BD6C3;
+			packageReferences = (
+				4A49BA312A3775FC001BD6C3 /* XCRemoteSwiftPackageReference "SQLite" */,
+			);
 			productRefGroup = 4A49BA212A3775B3001BD6C3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -339,6 +347,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4A49BA312A3775FC001BD6C3 /* XCRemoteSwiftPackageReference "SQLite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.14.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4A49BA322A3775FC001BD6C3 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4A49BA312A3775FC001BD6C3 /* XCRemoteSwiftPackageReference "SQLite" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4A49BA182A3775B3001BD6C3 /* Project object */;
 }
