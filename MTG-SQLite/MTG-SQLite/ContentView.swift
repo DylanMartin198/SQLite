@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SQLite3
 
 struct ContentView: View {
     @StateObject private var api = API()

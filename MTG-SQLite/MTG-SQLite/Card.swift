@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct Card: Codable, Identifiable {
+    let name: String
+    let id: String
+//    let image: String
+}
