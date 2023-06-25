@@ -26,11 +26,11 @@ class API: ObservableObject {
         // print all columns in a table
         
         
-        var name = Expression<String>("name")
+        let name = Expression<String>("name")
         let id = Expression<String>("uuid")
 
         do {
-            let query = table.select(name, id)
+//            let query = table.select(name, id)
             
 //            let result = try db.prepare(query.limit(1000))
             let result = try db.prepare(table.limit(1000))
