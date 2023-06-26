@@ -13,7 +13,7 @@ struct ContentView: View {
     @State private var isPickerVisible = false
     @State private var selectedOption = 0
 
-    let options = ["Card Name", "Card Number", "Rarity", "Types"]
+    let options = ["Name", "Number", "Rarity", "Types"]
 
     var body: some View {
             NavigationView {
@@ -41,7 +41,7 @@ struct ContentView: View {
                     .padding()
                     if isPickerVisible {
                         HStack {
-                            Text("Sort by...")
+                            Text("Filter By...")
                                 .foregroundColor(.black)
                                 .bold()
                                 .padding()
@@ -78,11 +78,40 @@ struct ContentView: View {
         }
 
     private var filteredCards: [Card] {
+        let searchOption = options[selectedOption]
+
         if searchText.isEmpty {
-            return api.cards
+            return api.cards.sorted(by: { compareCards($0, $1, by: searchOption) })
         } else {
-            return api.cards.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return api.cards.filter { $0.name!.localizedCaseInsensitiveContains(searchText) }
+                            .sorted(by: { compareCards($0, $1, by: searchOption) })
         }
+    }
+    
+    private func compareCards(_ card1: Card, _ card2: Card, by option: String) -> Bool {
+        switch option {
+        case "Name":
+            return card1.name!.localizedCaseInsensitiveCompare(card2.name!) == .orderedAscending
+        case "Number":
+            return card1.number!.localizedCaseInsensitiveCompare(card2.number!) == .orderedAscending
+        case "Rarity":
+            return compareRarity(card1.rarity!, card2.rarity!)
+        case "Types":
+            return card1.types!.localizedCaseInsensitiveCompare(card2.types!) == .orderedAscending
+        default:
+            return true
+        }
+    }
+
+    private func compareRarity(_ rarity1: String, _ rarity2: String) -> Bool {
+        let rarityOrder = ["Rare", "Uncommon", "Common"]
+        
+        guard let index1 = rarityOrder.firstIndex(of: rarity1),
+              let index2 = rarityOrder.firstIndex(of: rarity2) else {
+            return true
+        }
+        
+        return index1 < index2
     }
 }
 
@@ -90,7 +119,7 @@ struct CardView: View {
     let card: Card
 
     var body: some View {
-        Text(card.name)
+        Text(card.name!)
             .font(.title)
             .bold()
             .padding()

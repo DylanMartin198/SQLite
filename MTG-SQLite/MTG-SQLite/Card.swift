@@ -8,10 +8,10 @@
 import Foundation
 
 struct Card: Codable, Identifiable {
-    let name: String
-    let id: String
-    let rarity: String
-    let cardNumber: String
-    let types: String
+    let name: String?
+    let id: String?
+    let rarity: String?
+    let number: String?
+    let types: String?
 //    let image: String
 }

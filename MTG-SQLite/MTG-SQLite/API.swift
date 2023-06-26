@@ -28,6 +28,9 @@ class API: ObservableObject {
         
         let name = Expression<String>("name")
         let id = Expression<String>("uuid")
+        let rarity = Expression<String>("rarity")
+        let number = Expression<String>("number")
+        let types = Expression<String>("types")
 
         do {
 //            let query = table.select(name, id)
@@ -38,7 +41,10 @@ class API: ObservableObject {
             for row in result {
                 let cardName = row[name]
                 let cardID = row[id]
-                let card = Card(name: cardName, id: cardID)
+                let cardRarity = row[rarity]
+                let cardNumber = row[number]
+                let cardTypes = row[types]
+                let card = Card(name: cardName, id: cardID, rarity: cardRarity, number: cardNumber, types: cardTypes)
                 cards.append(card)
             }
                 
