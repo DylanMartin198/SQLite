@@ -21,7 +21,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 16) { // Increase the spacing between items
+            VStack(spacing: 16) {
                 VStack(spacing: 8) {
                     TextField("Search by name...", text: $searchText)
                         .padding(8)
@@ -35,46 +35,63 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 8)
                 
-                HStack {
-                    Text("Types:")
-                        .font(.headline)
-                        .padding(.trailing, 8)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Types:")
+                            .font(.headline)
+                            .padding(.trailing, 8)
+                        
+                        Spacer()
+                    }
                     
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(typeOptions, id: \.self) { option in
-                                Button(action: {
-                                    if selectedTypes.contains(option) {
-                                        selectedTypes.remove(option)
-                                    } else {
-                                        selectedTypes.insert(option)
+                    HStack {
+                        ForEach(typeOptions.chunked(into: 4), id: \.self) { rowOptions in
+                            VStack {
+                                ForEach(rowOptions, id: \.self) { option in
+                                    Button(action: {
+                                        if selectedTypes.contains(option) {
+                                            selectedTypes.remove(option)
+                                        } else {
+                                            selectedTypes.insert(option)
+                                        }
+                                    }) {
+                                        BoxView(label: option, isSelected: selectedTypes.contains(option))
                                     }
-                                }) {
-                                    BoxView(label: option, isSelected: selectedTypes.contains(option))
-                                        .frame(maxWidth: .infinity)
                                 }
                             }
                         }
                     }
                 }
+                .padding()
                 
-                HStack {
-                    Text("Rarity:")
-                        .font(.headline)
-                        .padding(.trailing, 8)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Rarity:")
+                            .font(.headline)
+                            .padding(.trailing, 8)
+                        
+                        Spacer()
+                    }
                     
-                    ForEach(rarityOptions, id: \.self) { option in
-                        Button(action: {
-                            if selectedRarities.contains(option) {
-                                selectedRarities.remove(option)
-                            } else {
-                                selectedRarities.insert(option)
+                    HStack {
+                        ForEach(rarityOptions.chunked(into: 2), id: \.self) { rowOptions in
+                            VStack {
+                                ForEach(rowOptions, id: \.self) { option in
+                                    Button(action: {
+                                        if selectedRarities.contains(option) {
+                                            selectedRarities.remove(option)
+                                        } else {
+                                            selectedRarities.insert(option)
+                                        }
+                                    }) {
+                                        BoxView(label: option, isSelected: selectedRarities.contains(option))
+                                    }
+                                }
                             }
-                        }) {
-                            BoxView(label: option, isSelected: selectedRarities.contains(option))
                         }
                     }
                 }
+                .padding()
                 
                 Button(action: {
                     isSubmitButtonPressed = true
@@ -116,7 +133,7 @@ struct ContentView: View {
                 Spacer()
             }
             .navigationBarTitle("Search For Card")
-            .padding(.top, 20) // Adjust the top padding to reduce the gap
+            .padding(.top, 20)
         }
     }
 }
@@ -152,5 +169,13 @@ struct CardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
+        }
     }
 }
