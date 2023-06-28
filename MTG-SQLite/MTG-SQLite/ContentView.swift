@@ -10,108 +10,131 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var api = API()
     @State private var searchText = ""
-    @State private var isPickerVisible = false
-    @State private var selectedOption = 0
-
-    let options = ["Name", "Number", "Rarity", "Types"]
-
+    @State private var numberSearchText = ""
+    @State private var selectedTypes: Set<String> = []
+    @State private var selectedRarities: Set<String> = []
+    @State private var shouldShowResults = false
+    @State private var isSubmitButtonPressed = false
+    
+    private let typeOptions = ["Creature", "Artifact", "Enchantment", "Instant", "Planeswalker", "Conspiracy", "Land"]
+    private let rarityOptions = ["mythic", "rare", "uncommon", "common"]
+    
     var body: some View {
-            NavigationView {
-                VStack {
-                    HStack {
-                        TextField("Search here...", text: $searchText, onEditingChanged: { isEditing in
-                            if isEditing {
-                                isPickerVisible = true
-                            }
-                        })
+        NavigationView {
+            VStack(spacing: 16) { // Increase the spacing between items
+                VStack(spacing: 8) {
+                    TextField("Search by name...", text: $searchText)
                         .padding(8)
                         .background(Color(.systemGray5))
                         .cornerRadius(8)
-                        .padding(.horizontal, 8)
-
-                        Button(action: {
-                            searchText = ""
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.gray)
-                        }
+                    
+                    TextField("Search by number...", text: $numberSearchText)
+                        .padding(8)
+                        .background(Color(.systemGray5))
+                        .cornerRadius(8)
+                }
+                .padding(.horizontal, 8)
+                
+                HStack {
+                    Text("Types:")
+                        .font(.headline)
                         .padding(.trailing, 8)
-                        .opacity(searchText.isEmpty ? 0 : 1)
-                    }
-                    .padding()
-                    if isPickerVisible {
-                        HStack {
-                            Text("Filter By...")
-                                .foregroundColor(.black)
-                                .bold()
-                                .padding()
-                            Picker(selection: $selectedOption, label: Text("Search By")) {
-                                ForEach(0..<4) { index in
-                                    Text(options[index])
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(typeOptions, id: \.self) { option in
+                                Button(action: {
+                                    if selectedTypes.contains(option) {
+                                        selectedTypes.remove(option)
+                                    } else {
+                                        selectedTypes.insert(option)
+                                    }
+                                }) {
+                                    BoxView(label: option, isSelected: selectedTypes.contains(option))
+                                        .frame(maxWidth: .infinity)
                                 }
                             }
-                            .pickerStyle(MenuPickerStyle())
-                            .background(Color(.systemGray5))
-                            .cornerRadius(8)
-                        }
-                        .padding()
-                        .onDisappear {
-                            isPickerVisible = false
-                        }
-                    }
-
-                    List {
-                        ForEach(filteredCards) { card in
-                            CardView(card: card)
                         }
                     }
                 }
-                .navigationBarTitle("Search For Card")
-                .onAppear {
-                    api.fetchCards { cards in
+                
+                HStack {
+                    Text("Rarity:")
+                        .font(.headline)
+                        .padding(.trailing, 8)
+                    
+                    ForEach(rarityOptions, id: \.self) { option in
+                        Button(action: {
+                            if selectedRarities.contains(option) {
+                                selectedRarities.remove(option)
+                            } else {
+                                selectedRarities.insert(option)
+                            }
+                        }) {
+                            BoxView(label: option, isSelected: selectedRarities.contains(option))
+                        }
+                    }
+                }
+                
+                Button(action: {
+                    isSubmitButtonPressed = true
+                    shouldShowResults = true
+                    
+                    let selectedTypeString = selectedTypes.joined(separator: ",")
+                    let selectedRarityString = selectedRarities.joined(separator: ",")
+                    
+                    api.fetchCards(nameSearchText: searchText, numberSearchText: numberSearchText, selectedType: selectedTypeString, selectedRarity: selectedRarityString) { cards in
                         DispatchQueue.main.async {
                             api.cards = cards
                         }
                     }
+                }) {
+                    Text("Search")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(8)
                 }
+                
+                if shouldShowResults {
+                    if api.cards.isEmpty {
+                        Text("No results found")
+                            .foregroundColor(.gray)
+                            .padding()
+                    } else {
+                        NavigationLink(
+                            destination: ResultView(cards: api.cards, onBack: {
+                                shouldShowResults = false
+                            }),
+                            isActive: $shouldShowResults,
+                            label: { EmptyView() }
+                        )
+                        .hidden()
+                    }
+                }
+                
+                Spacer()
             }
-        }
-
-    private var filteredCards: [Card] {
-        let searchOption = options[selectedOption]
-
-        if searchText.isEmpty {
-            return api.cards.sorted(by: { compareCards($0, $1, by: searchOption) })
-        } else {
-            return api.cards.filter { $0.name!.localizedCaseInsensitiveContains(searchText) }
-                            .sorted(by: { compareCards($0, $1, by: searchOption) })
+            .navigationBarTitle("Search For Card")
+            .padding(.top, 20) // Adjust the top padding to reduce the gap
         }
     }
+}
+
+struct BoxView: View {
+    let label: String
+    let isSelected: Bool
     
-    private func compareCards(_ card1: Card, _ card2: Card, by option: String) -> Bool {
-        switch option {
-        case "Name":
-            return card1.name!.localizedCaseInsensitiveCompare(card2.name!) == .orderedAscending
-        case "Number":
-            return card1.number!.localizedCaseInsensitiveCompare(card2.number!) == .orderedAscending
-        case "Rarity":
-            return compareRarity(card1.rarity!, card2.rarity!)
-        case "Types":
-            return card1.types!.localizedCaseInsensitiveCompare(card2.types!) == .orderedAscending
-        default:
-            return true
+    var body: some View {
+        VStack {
+            RoundedRectangle(cornerRadius: 8)
+                .foregroundColor(isSelected ? .blue : .gray)
+                .frame(width: 20, height: 20)
+            
+            Text(label)
+                .font(.caption)
         }
-    }
-
-    private func compareRarity(_ rarity1: String, _ rarity2: String) -> Bool {
-        let rarityOrder = ["Rare", "Uncommon", "Common"]
-        
-        guard let index1 = rarityOrder.firstIndex(of: rarity1),
-              let index2 = rarityOrder.firstIndex(of: rarity2) else {
-            return true
-        }
-        
-        return index1 < index2
+        .padding(.trailing, 8)
     }
 }
 

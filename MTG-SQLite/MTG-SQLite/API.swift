@@ -12,7 +12,7 @@ class API: ObservableObject {
     @Published var cards: [Card] = []
     @Published var isLoading: Bool = false
     
-    func fetchCards(completion: @escaping ([Card]) -> Void) {
+    func fetchCards(nameSearchText: String, numberSearchText: String, selectedType: String, selectedRarity: String, completion: @escaping ([Card]) -> Void) {
         isLoading = true
         
         let bundlePath = Bundle.main.bundleURL.absoluteString
@@ -20,24 +20,36 @@ class API: ObservableObject {
             completion([])
             return
         }
-//        db.trace({ print($0) })
+        
         let table = Table("cards")
-        // where setCode == "mom" - picker/drop down with column names and when they tap search you filter all cards by that colum and search that columns text
-        // print all columns in a table
-        
-        
         let name = Expression<String>("name")
         let id = Expression<String>("uuid")
         let rarity = Expression<String>("rarity")
         let number = Expression<String>("number")
         let types = Expression<String>("types")
 
-        do {
-//            let query = table.select(name, id)
-            
-//            let result = try db.prepare(query.limit(1000))
-            let result = try db.prepare(table.limit(1000))
+        var query = table.limit(1000)
+        
+        if !nameSearchText.isEmpty {
+            query = query.filter(name.like("%\(nameSearchText)%"))
+        }
+        
+        if !numberSearchText.isEmpty {
+            query = query.filter(number.like("%\(numberSearchText)%"))
+        }
+        
+        if !selectedType.isEmpty {
+            query = query.filter(types.like("%\(selectedType)%"))
+        }
+        
+        if !selectedRarity.isEmpty {
+            query = query.filter(rarity.like("%\(selectedRarity)%"))
+        }
 
+        do {
+            let result = try db.prepare(query)
+            var cards: [Card] = []
+            
             for row in result {
                 let cardName = row[name]
                 let cardID = row[id]
@@ -47,18 +59,33 @@ class API: ObservableObject {
                 let card = Card(name: cardName, id: cardID, rarity: cardRarity, number: cardNumber, types: cardTypes)
                 cards.append(card)
             }
-                
-//            for row in try db.prepare("SELECT name, uuid FROM cards LIMIT 1000") {
-//                let cardName = row[0] as! String?
-//                let cardID = row[1] as! String?
-//                let card = Card(name: cardName!, id: cardID!)
-//                cards.append(card)
-//            }
+            
+            completion(cards)
         } catch {
             print("Error querying database: \(error)")
             completion([])
         }
         
         isLoading = false
+    }
+    
+    private func column(for searchOption: String) -> Expression<String> {
+        let name = Expression<String>("name")
+        let number = Expression<String>("number")
+        let rarity = Expression<String>("rarity")
+        let types = Expression<String>("types")
+
+        switch searchOption {
+        case "Name":
+            return name
+        case "Number":
+            return number
+        case "Rarity":
+            return rarity
+        case "Types":
+            return types
+        default:
+            return name
+        }
     }
 }
