@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var shouldShowResults = false
     @State private var isSubmitButtonPressed = false
     
-    private let typeOptions = ["Creature", "Artifact", "Enchantment", "Instant", "Planeswalker", "Conspiracy", "Land"]
+    private let typeOptions = ["Creature", "Artifact", "Enchantment", "Instant", "Planeswalker", "Conspiracy", "Land", "Tribal", "Battle", "Plane", "Phenomenon", "Summon"]
     private let rarityOptions = ["mythic", "rare", "uncommon", "common"]
     
     var body: some View {
