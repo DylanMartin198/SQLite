@@ -93,26 +93,6 @@ struct ContentView: View {
                 }
                 .padding()
                 
-                Button(action: {
-                    isSubmitButtonPressed = true
-                    shouldShowResults = true
-                    
-                    let selectedTypeString = selectedTypes.joined(separator: ",")
-                    let selectedRarityString = selectedRarities.joined(separator: ",")
-                    
-                    api.fetchCards(nameSearchText: searchText, numberSearchText: numberSearchText, selectedType: selectedTypeString, selectedRarity: selectedRarityString) { cards in
-                        DispatchQueue.main.async {
-                            api.cards = cards
-                        }
-                    }
-                }) {
-                    Text("Search")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-                
                 if shouldShowResults {
                     if api.cards.isEmpty {
                         Text("No results found")
@@ -130,17 +110,36 @@ struct ContentView: View {
                     }
                 }
                 
-                Spacer()
-                
-                
-                Button(action: {
-                    clearSearch()
-                }) {
-                    Text("Clear")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.red)
-                        .cornerRadius(8)
+                HStack {
+                    Button(action: {
+                        isSubmitButtonPressed = true
+                        shouldShowResults = true
+                        
+                        let selectedTypeString = selectedTypes.joined(separator: ",")
+                        let selectedRarityString = selectedRarities.joined(separator: ",")
+                        
+                        api.fetchCards(nameSearchText: searchText, numberSearchText: numberSearchText, selectedType: selectedTypeString, selectedRarity: selectedRarityString) { cards in
+                            DispatchQueue.main.async {
+                                api.cards = cards
+                            }
+                        }
+                    }) {
+                        Text("Search")
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        clearSearch()
+                    }) {
+                        Text("Clear")
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.red)
+                            .cornerRadius(8)
+                    }
                 }
             }
             .navigationBarTitle("Search For Card")
