@@ -131,10 +131,29 @@ struct ContentView: View {
                 }
                 
                 Spacer()
+                
+                
+                Button(action: {
+                    clearSearch()
+                }) {
+                    Text("Clear")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(8)
+                }
             }
             .navigationBarTitle("Search For Card")
             .padding(.top, 20)
         }
+    }
+    func clearSearch() {
+        searchText = ""
+        numberSearchText = ""
+        selectedTypes = []
+        selectedRarities = []
+        shouldShowResults = false
+        isSubmitButtonPressed = false
     }
 }
 
