@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var api = API()
     @State private var searchText = ""
     @State private var numberSearchText = ""
+    @State private var setCodeText = ""
     @State private var selectedTypes: Set<String> = []
     @State private var selectedRarities: Set<String> = []
     @State private var shouldShowResults = false
@@ -29,6 +30,11 @@ struct ContentView: View {
                         .cornerRadius(8)
                     
                     TextField("Search by number...", text: $numberSearchText)
+                        .padding(8)
+                        .background(Color(.systemGray5))
+                        .cornerRadius(8)
+                    
+                    TextField("Search by setCode...", text: $setCodeText)
                         .padding(8)
                         .background(Color(.systemGray5))
                         .cornerRadius(8)
@@ -118,7 +124,7 @@ struct ContentView: View {
                         let selectedTypeString = selectedTypes.joined(separator: ",")
                         let selectedRarityString = selectedRarities.joined(separator: ",")
                         
-                        api.fetchCards(nameSearchText: searchText, numberSearchText: numberSearchText, selectedType: selectedTypeString, selectedRarity: selectedRarityString) { cards in
+                        api.fetchCards(nameSearchText: searchText, numberSearchText: numberSearchText, setCodeText: setCodeText, selectedType: selectedTypeString, selectedRarity: selectedRarityString) { cards in
                             DispatchQueue.main.async {
                                 api.cards = cards
                             }
@@ -151,6 +157,7 @@ struct ContentView: View {
         numberSearchText = ""
         selectedTypes = []
         selectedRarities = []
+        setCodeText = ""
         shouldShowResults = false
         isSubmitButtonPressed = false
     }

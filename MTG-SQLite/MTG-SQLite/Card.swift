@@ -13,5 +13,6 @@ struct Card: Codable, Identifiable {
     let rarity: String?
     let number: String?
     let types: String?
+    let setCode: String?
 //    let image: String
 }

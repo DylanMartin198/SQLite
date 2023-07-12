@@ -12,7 +12,7 @@ class API: ObservableObject {
     @Published var cards: [Card] = []
     @Published var isLoading: Bool = false
     
-    func fetchCards(nameSearchText: String, numberSearchText: String, selectedType: String, selectedRarity: String, completion: @escaping ([Card]) -> Void) {
+    func fetchCards(nameSearchText: String, numberSearchText: String, setCodeText: String, selectedType: String, selectedRarity: String, completion: @escaping ([Card]) -> Void) {
         isLoading = true
         
         let bundlePath = Bundle.main.bundleURL.absoluteString
@@ -27,6 +27,7 @@ class API: ObservableObject {
         let rarity = Expression<String>("rarity")
         let number = Expression<String>("number")
         let types = Expression<String>("types")
+        let setCode = Expression<String>("setCode")
 
         var query = table.limit(1000)
         
@@ -36,6 +37,10 @@ class API: ObservableObject {
         
         if !numberSearchText.isEmpty {
             query = query.filter(number.like("%\(numberSearchText)%"))
+        }
+        
+        if !setCodeText.isEmpty {
+            query = query.filter(setCode.like("%\(setCodeText)%"))
         }
         
         if !selectedType.isEmpty {
@@ -56,7 +61,8 @@ class API: ObservableObject {
                 let cardRarity = row[rarity]
                 let cardNumber = row[number]
                 let cardTypes = row[types]
-                let card = Card(name: cardName, id: cardID, rarity: cardRarity, number: cardNumber, types: cardTypes)
+                let setCode = row[setCode]
+                let card = Card(name: cardName, id: cardID, rarity: cardRarity, number: cardNumber, types: cardTypes, setCode: setCode)
                 cards.append(card)
             }
             
@@ -74,6 +80,7 @@ class API: ObservableObject {
         let number = Expression<String>("number")
         let rarity = Expression<String>("rarity")
         let types = Expression<String>("types")
+        let setCode = Expression<String>("setCode")
 
         switch searchOption {
         case "Name":
@@ -84,6 +91,8 @@ class API: ObservableObject {
             return rarity
         case "Types":
             return types
+        case "setCode":
+            return setCode
         default:
             return name
         }
