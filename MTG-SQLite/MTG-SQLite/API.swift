@@ -15,8 +15,8 @@ class API: ObservableObject {
     func fetchCards(nameSearchText: String, numberSearchText: String, setCodeText: String, selectedType: String, selectedRarity: String, completion: @escaping ([Card]) -> Void) {
         isLoading = true
         
-        let bundlePath = Bundle.main.bundleURL.absoluteString
-        guard let db = try? Connection(bundlePath + "AllPrintings.sqlite") else {
+        let bundlePath = Bundle.main.bundleURL.path
+        guard let db = try? Connection(bundlePath + "/AllPrintings.sqlite") else {
             completion([])
             return
         }
